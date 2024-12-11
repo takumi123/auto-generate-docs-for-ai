@@ -1,8 +1,8 @@
 {
   "name": "auto-generate-docs-for-ai",
-  "displayName": "auto_generate_docs_for_ai",
-  "description": "When doing AI coding, create a document that the AI ​​first reads and understands the specifications with the push of a button.",
-  "version": "0.0.2",
+  "displayName": "auto_generate_docs_for_ai", 
+  "description": "Create documentation that helps AI understand specifications with a single button press when doing AI coding.",
+  "version": "0.1.0",
   "publisher": "TakumiEndoh-JapanMarketingLLC",
   "repository": {
     "type": "git",
@@ -47,29 +47,20 @@
         "aiDocsGenerator.customSystemPrompt": {
           "type": "string",
           "default": "",
-          "description": "AIに与えるカスタムシステムプロンプト"
+          "description": "Custom system prompt to give to AI"
         },
         "aiDocsGenerator.outputPath": {
           "type": "string",
           "default": "docs_for_ai/summary.md",
-          "description": "生成されるドキュメントの出力パス（ワークスペースルートからの相対パス）"
+          "description": "Output path for generated documentation (relative path from workspace root)"
         },
         "aiDocsGenerator.outputLanguage": {
           "type": "string",
           "enum": [
-            "English",
-            "Japanese",
-            "Chinese (Simplified)",
-            "Spanish",
-            "French",
-            "German",
-            "Korean",
-            "Portuguese",
-            "Italian",
-            "Russian"
+            "English"
           ],
           "default": "English",
-          "description": "生成されるドキュメントの言語"
+          "description": "Language for generated documentation"
         }
       }
     }
