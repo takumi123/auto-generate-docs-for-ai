@@ -2,7 +2,7 @@
   "name": "auto-generate-docs-for-ai",
   "displayName": "auto_generate_docs_for_ai", 
   "description": "Create documentation that helps AI understand specifications with a single button press when doing AI coding.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "TakumiEndoh-JapanMarketingLLC",
   "repository": {
     "type": "git",
