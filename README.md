@@ -1,71 +1,50 @@
-# auto-generate-docs-for-ai README
+# AI開発用ドキュメント自動生成拡張機能
 
-This is the README for your extension "auto-generate-docs-for-ai". After writing up a brief description, we recommend including the following sections.
+AIを使用したコーディング時に、AIが最初に仕様を読んで理解するためのドキュメントをボタン一つで作成する拡張機能です。
 
-## Features
+## 機能
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+現在のバージョン（v0.0.1）では、以下の基本機能を提供しています：
 
-For example if there is an image subfolder under your extension project workspace:
+- コマンドパレットから `Hello World` コマンドを実行可能
+- 実行時に情報メッセージを表示
 
-\!\[feature X\]\(images/feature-x.png\)
+## 必要要件
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- VS Code 1.95.0以上
 
-## Requirements
+## インストール方法
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+1. VS Codeを開きます
+2. 拡張機能ビュー（Ctrl+Shift+X）を開きます
+3. `auto-generate-docs-for-ai`を検索します
+4. インストールをクリックします
 
-## Extension Settings
+## 使用方法
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+1. コマンドパレットを開きます（Ctrl+Shift+P）
+2. `Hello World`と入力して選択します
+3. 情報メッセージが表示されます
 
-For example:
+## 今後の開発予定
 
-This extension contributes the following settings:
+- AIが理解しやすいドキュメント形式の自動生成
+- プロジェクト構造の自動分析
+- 主要な機能とコードフローの自動ドキュメント化
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+## リリースノート
 
-## Known Issues
+### 0.0.1
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+- 初期リリース
+- Hello World基本機能の実装
 
 ---
 
-## Following extension guidelines
+**開発者向け情報**
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+このプロジェクトはTypeScriptで開発されており、VS Code拡張機能のガイドラインに従って実装されています。
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+## ライセンス
 
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+このプロジェクトはMITライセンスの下で公開されています。

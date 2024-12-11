@@ -1,26 +1,43 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { DocumentationWebviewProvider } from './webview/documentationPanel';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+    let setApiKeyCommand = vscode.commands.registerCommand('auto-generate-docs-for-ai.setOpenRouterAPI', async () => {
+        const apiKey = await vscode.window.showInputBox({
+            prompt: 'OpenRouter APIキーを入力してください',
+            password: true
+        });
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "auto-generate-docs-for-ai" is now active!');
+        if (apiKey) {
+            await context.secrets.store('openrouter-api-key', apiKey);
+            vscode.window.showInformationMessage('APIキーが保存されました');
+            // APIキーが更新されたことをWebViewに通知
+            provider.notifyApiKeyUpdate();
+        }
+    });
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('auto-generate-docs-for-ai.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from auto_generate_docs_for_ai!');
-	});
+    const provider = new DocumentationWebviewProvider(context);
 
-	context.subscriptions.push(disposable);
+    // ファイルシステムの変更を監視
+    const workspaceRoot = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+    if (workspaceRoot) {
+        const watcher = vscode.workspace.createFileSystemWatcher(
+            new vscode.RelativePattern(workspaceRoot, '**/*'),
+            false, // 作成イベントを監視
+            true,  // 変更イベントは無視
+            true   // 削除イベントは無視
+        );
+
+        // 新規ファイルが作成された時にファイルツリーを更新
+        watcher.onDidCreate(() => {
+            provider.updateFileTree();
+        });
+
+        context.subscriptions.push(watcher);
+    }
+
+    context.subscriptions.push(
+        setApiKeyCommand,
+        vscode.window.registerWebviewViewProvider('auto-generate-docs-view', provider)
+    );
 }
-
-// This method is called when your extension is deactivated
-export function deactivate() {}

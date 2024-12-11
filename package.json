@@ -2,9 +2,14 @@
   "name": "auto-generate-docs-for-ai",
   "displayName": "auto_generate_docs_for_ai",
   "description": "When doing AI coding, create a document that the AI ​​first reads and understands the specifications with the push of a button.",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "publisher": "TakumiEndoh-JapanMarketingLLC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/takumiendoh/auto-generate-docs-for-ai.git"
+  },
   "engines": {
-    "vscode": "^1.95.0"
+    "vscode": "^1.89.1"
   },
   "categories": [
     "Other"
@@ -12,12 +17,62 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "auto-generate-docs-sidebar",
+          "title": "AI Docs Generator",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "auto-generate-docs-sidebar": [
+        {
+          "id": "auto-generate-docs-view",
+          "name": "AI Docs Generator",
+          "type": "webview"
+        }
+      ]
+    },
     "commands": [
       {
-        "command": "auto-generate-docs-for-ai.helloWorld",
-        "title": "Hello World"
+        "command": "auto-generate-docs-for-ai.setOpenRouterAPI",
+        "title": "Set OpenRouter API Key"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "AI Docs Generator",
+      "properties": {
+        "aiDocsGenerator.customSystemPrompt": {
+          "type": "string",
+          "default": "",
+          "description": "AIに与えるカスタムシステムプロンプト"
+        },
+        "aiDocsGenerator.outputPath": {
+          "type": "string",
+          "default": "docs_for_ai/summary.md",
+          "description": "生成されるドキュメントの出力パス（ワークスペースルートからの相対パス）"
+        },
+        "aiDocsGenerator.outputLanguage": {
+          "type": "string",
+          "enum": [
+            "English",
+            "Japanese",
+            "Chinese (Simplified)",
+            "Spanish",
+            "French",
+            "German",
+            "Korean",
+            "Portuguese",
+            "Italian",
+            "Russian"
+          ],
+          "default": "English",
+          "description": "生成されるドキュメントの言語"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -31,7 +86,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.95.0",
+    "@types/vscode": "^1.89.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
@@ -43,5 +98,8 @@
     "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1"
+  },
+  "dependencies": {
+    "path": "^0.12.7"
   }
 }
