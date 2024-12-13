@@ -3,3 +3,9 @@ dist
 node_modules
 .vscode-test/
 *.vsix
+# JavaScript build artifacts
+**/*.js
+**/*.js.map
+!webpack.config.js
+!.vscode-test.mjs
+!eslint.config.mjs
