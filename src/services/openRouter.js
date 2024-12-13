@@ -1,26 +1,57 @@
-import * as vscode from 'vscode';
-import * as path from 'path';
-import { OpenRouterResponse, FileContent } from '../types';
-
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.callOpenRouterAPI = callOpenRouterAPI;
+exports.generateDocumentation = generateDocumentation;
+const vscode = __importStar(require("vscode"));
+const path = __importStar(require("path"));
 // Global status bar item
-let statusBarItem: vscode.StatusBarItem | undefined;
-let loadingInterval: NodeJS.Timeout | null = null;
-
+let statusBarItem;
+let loadingInterval = null;
 const loadingFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 let currentFrame = 0;
 let currentMessage = '';
 let currentPercent = 0;
-
 function startLoadingAnimation() {
     if (!statusBarItem) {
         statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
         statusBarItem.show();
     }
-    
     if (loadingInterval) {
         return;
     }
-    
     loadingInterval = setInterval(() => {
         currentFrame = (currentFrame + 1) % loadingFrames.length;
         const progressBar = '█'.repeat(Math.floor(currentPercent / 5)) + '░'.repeat(20 - Math.floor(currentPercent / 5));
@@ -29,31 +60,27 @@ function startLoadingAnimation() {
         }
     }, 80);
 }
-
 function stopLoadingAnimation() {
     if (loadingInterval) {
         clearInterval(loadingInterval);
         loadingInterval = null;
     }
-    
     if (statusBarItem) {
         statusBarItem.dispose();
         statusBarItem = undefined;
     }
 }
-
-function showProgress(message: string, percent: number, showSpinner: boolean = true) {
+function showProgress(message, percent, showSpinner = true) {
     currentMessage = message;
     currentPercent = percent;
-    
     if (!statusBarItem) {
         statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
         statusBarItem.show();
     }
-
     if (showSpinner && !loadingInterval) {
         startLoadingAnimation();
-    } else if (!showSpinner && loadingInterval) {
+    }
+    else if (!showSpinner && loadingInterval) {
         if (statusBarItem) {
             const progressBar = '█'.repeat(Math.floor(percent / 5)) + '░'.repeat(20 - Math.floor(percent / 5));
             statusBarItem.text = `${message} [${progressBar}] ${percent}%`;
@@ -61,7 +88,6 @@ function showProgress(message: string, percent: number, showSpinner: boolean = t
         stopLoadingAnimation();
     }
 }
-
 const PROMPT = `
 [Objective]  
 Analyze the given codebase and produce a single, comprehensive summary document that provides a complete overview of the entire implemented system.  
@@ -116,30 +142,24 @@ Do not make assumptions or suggestions; document only what is explicitly impleme
 Following these requirements, extract and summarize all the directly available information from the codebase into one comprehensive summary.
 
 `;
-
-export async function callOpenRouterAPI(apiKey: string, files: FileContent[]): Promise<string> {
+async function callOpenRouterAPI(apiKey, files) {
     const config = vscode.workspace.getConfiguration('aiDocsGenerator');
-    const customSystemPrompt = config.get<string>('customSystemPrompt') || '';
-
+    const customSystemPrompt = config.get('customSystemPrompt') || '';
     startLoadingAnimation();
-
     const messages = [
         ...(customSystemPrompt ? [{
-            role: "system",
-            content: customSystemPrompt
-        }] : []),
+                role: "system",
+                content: customSystemPrompt
+            }] : []),
         {
             role: "system",
             content: PROMPT
         },
         {
             role: "user",
-            content: `Please analyze and summarize the following files in English.\n\n${
-                files.map(f => `=== ${f.path} ===\n${f.content}\n`).join('\n')
-            }`
+            content: `Please analyze and summarize the following files in English.\n\n${files.map(f => `=== ${f.path} ===\n${f.content}\n`).join('\n')}`
         }
     ];
-
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -151,49 +171,35 @@ export async function callOpenRouterAPI(apiKey: string, files: FileContent[]): P
             messages: messages
         })
     });
-
     if (!response.ok) {
         stopLoadingAnimation();
         throw new Error(`API request failed: ${response.statusText}`);
     }
-
-    const data = await response.json() as OpenRouterResponse;
+    const data = await response.json();
     return data.choices[0].message.content;
 }
-
-export async function generateDocumentation(
-    apiKey: string,
-    files: string[],
-    workspaceRoot: string,
-    readFileContent: (path: string) => Promise<string>,
-    updateSummaryFile: (content: string, workspaceRoot: string) => Promise<string>
-): Promise<string> {
+async function generateDocumentation(apiKey, files, workspaceRoot, readFileContent, updateSummaryFile) {
     if (!files || files.length === 0) {
         throw new Error('No files selected');
     }
-
     showProgress('Initializing...', 0, true);
-
     // Process files with detailed progress
     let filesProcessed = 0;
     const totalFiles = files.length;
-    const fileContents = await Promise.all(
-        files.map(async (filePath: string) => {
-            const content = await readFileContent(filePath);
-            filesProcessed++;
-            const percent = Math.floor((filesProcessed / totalFiles) * 40); // 0-40%
-            showProgress(`Processing file (${filesProcessed}/${totalFiles}): ${path.basename(filePath)}`, percent, true);
-            return {
-                path: path.relative(workspaceRoot, filePath),
-                content
-            };
-        })
-    );
-
+    const fileContents = await Promise.all(files.map(async (filePath) => {
+        const content = await readFileContent(filePath);
+        filesProcessed++;
+        const percent = Math.floor((filesProcessed / totalFiles) * 40); // 0-40%
+        showProgress(`Processing file (${filesProcessed}/${totalFiles}): ${path.basename(filePath)}`, percent, true);
+        return {
+            path: path.relative(workspaceRoot, filePath),
+            content
+        };
+    }));
     // Load existing summary.md
     showProgress('Loading existing documentation...', 45, true);
     const config = vscode.workspace.getConfiguration('aiDocsGenerator');
-    const outputPath = config.get<string>('outputPath') || 'docs_for_ai/summary.md';
+    const outputPath = config.get('outputPath') || 'docs_for_ai/summary.md';
     const summaryPath = path.join(workspaceRoot, outputPath);
     let existingSummary = '';
     try {
@@ -204,10 +210,10 @@ export async function generateDocumentation(
                 content: existingSummary
             });
         }
-    } catch (error) {
+    }
+    catch (error) {
         // Ignore if file doesn't exist
     }
-
     // Gemini analysis with detailed progress
     showProgress('Preparing Gemini analysis...', 50, true);
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -219,3 +225,4 @@ export async function generateDocumentation(
     stopLoadingAnimation();
     return resultPath;
 }
+//# sourceMappingURL=openRouter.js.map
